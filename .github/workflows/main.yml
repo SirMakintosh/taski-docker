@@ -150,6 +150,7 @@ jobs:
           # Тут вместо username должен быть ваш логин на Docker Hub
           tags: ${{ secrets.DOCKER_USERNAME }}/taski_gateway:latest
   deploy:
+    name: Deploying
     runs-on: ubuntu-latests
     needs: 
       # Дождёмся билда всех образов Taski
@@ -182,12 +183,9 @@ jobs:
         # с которым установлено соединение
         script: |
           cd taski
-          # Выполняет pull образов с Docker Hub
           sudo docker compose -f docker-compose.production.yml pull
-          # Перезапускает все контейнеры в Docker Compose
           sudo docker compose -f docker-compose.production.yml down
           sudo docker compose -f docker-compose.production.yml up -d
-          # Выполняет миграции и сбор статики
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
           sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic
           sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /backend_static/static/ 
